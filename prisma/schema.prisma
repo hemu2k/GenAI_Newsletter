@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Subscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  token        String   @unique
+  confirmedAt  DateTime?
+  createdAt    DateTime @default(now())
+  issues       Issue[]  @relation("SubscriberIssues")
+}
+
+model Issue {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  html        String
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  subscribers Subscriber[] @relation("SubscriberIssues")
+}
