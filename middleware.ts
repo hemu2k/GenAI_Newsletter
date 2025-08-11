@@ -1,24 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server'
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-  const protectedPaths = ['/admin', '/api/send', '/api/issues', '/issues/new'];
-  const needsAuth = protectedPaths.some(p => pathname.startsWith(p));
-  if (!needsAuth) return NextResponse.next();
-
-  const auth = req.headers.get('authorization');
-  const user = process.env.ADMIN_USER;
-  const pass = process.env.ADMIN_PASS;
-  const expected = 'Basic ' + Buffer.from(`${user}:${pass}`).toString('base64');
-  if (auth !== expected) {
-    return new NextResponse('Unauthorized', {
-      status: 401,
-      headers: { 'WWW-Authenticate': 'Basic realm="Admin"' }
-    });
+export function middleware(request: NextRequest) {
+  // Check if the request is for admin routes
+  if (request.nextUrl.pathname.startsWith('/admin') || request.nextUrl.pathname.startsWith('/api/newsletter')) {
+    const adminAuth = request.cookies.get('admin-auth')
+    
+    // If not authenticated, redirect to login
+    if (!adminAuth || adminAuth.value !== 'true') {
+      if (request.nextUrl.pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
   }
-  return NextResponse.next();
+  
+  return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/send', '/api/issues', '/issues/new']
-};
+  matcher: ['/admin/:path*', '/api/newsletter/:path*']
+}

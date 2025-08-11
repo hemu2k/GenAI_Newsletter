@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1754885734944",
+    "email": "test@example.com",
+    "subscribedAt": "2025-08-11T04:15:34.944Z",
+    "status": "active"
+  },
+  {
+    "id": "1754885803445",
+    "email": "reddyhg@gmail.com",
+    "subscribedAt": "2025-08-11T04:16:43.445Z",
+    "status": "active"
+  }
+]
